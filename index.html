@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMM Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .service { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>SMM Panel</h1>
+    
+    <h2>Available Services</h2>
+    <div id="services"></div>
+    
+    <script>
+        // Fetch services from the API
+        fetch('get_services.php')
+            .then(response => response.json())
+            .then(data => {
+                const servicesContainer = document.getElementById('services');
+                data.services.forEach(service => {
+                    const serviceDiv = document.createElement('div');
+                    serviceDiv.classList.add('service');
+                    serviceDiv.innerHTML = `
+                        <p>${service.service_name} - $${service.price}</p>
+                        <button onclick="placeOrder(${service.id})">Place Order</button>
+                    `;
+                    servicesContainer.appendChild(serviceDiv);
+                });
+            });
+
+        // Place an order
+        function placeOrder(serviceId) {
+            const userId = 1; // Example user ID (in real apps, this would be dynamic)
+
+            const data = new URLSearchParams();
+            data.append('user_id', userId);
+            data.append('service_id', serviceId);
+            data.append('quantity', 1); // Example quantity
+
+            fetch('place_order.php', {
+                method: 'POST',
+                body: data
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message));
+        }
+    </script>
+</body>
+</html>
